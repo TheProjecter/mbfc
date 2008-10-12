@@ -1,4 +1,5 @@
 #summary MBFC Wiki page
+#labels Featured,Phase-Design,Phase-QA,Phase-Support
 = Introduction =
 
 Here is our project wiki.
