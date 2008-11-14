@@ -1,9 +1,10 @@
 package mbfcme.storage;
+
 import javax.microedition.lcdui.Graphics;
 /*
  * Created until 26-Nov-2007 at 16:20:01.
  * 
- * Copyright (c) 2007 Majid Asgari Bidhendi / Squirrel Soft®
+ * Copyright (c) 2007 Majid Asgari Bidhendi / Squirrel Softï¿½
  *
  * This file is part of Mobile Bit Font Creator.
  *
@@ -27,77 +28,107 @@ import javax.microedition.lcdui.Graphics;
  */
 
 public class BitArray {
-  private byte [][] array;
-  private int row,col;
-  public static final int rowsScale=2;
-  public static final int colsScale=2;
-  public BitArray(int aRow,int aCol) {
-    row=aRow;
-    col=aCol;
-    int realCol=(col-1)/8+1;
-    array=new byte[row][realCol];
-    for(int i=0;i<row;i++)
-     for(int j=0;j<realCol;j++)
-       array[i][j]=0;
-  }
-  public BitArray(byte[] byteArray,int aRow,int aCol){
-    row=aRow;
-    col=aCol;
-    setBytes(byteArray);
-  }
-  public void setBit(int r,int c){
-    int tempC=c/8;
-    array[r][tempC]=(byte)((array[r][tempC])|(twoPower(7-(c-8*tempC))));
-  }
-  public void clearBit(int r,int c){
-    int tempC=c/8;
-    array[r][tempC]=(byte)(array[r][tempC]&(255-twoPower(7-(c-8*tempC))));
-  }
-  public void complementBit(int r,int c){
-    int bit=getBit(r,c);
-    if(bit==1) clearBit(r,c);
-    else setBit(r,c);
-  }
-  public int getBit(int r,int c){
-    try{
-      int temp = array[r][c / 8] & (twoPower(7 - (c - 8 * (c / 8))));
-      if (temp == 0)return (0);
-    }catch(Exception e){System.out.println("Error in array boundries"+r+" "+c);}
-    return(1);
-  }
-  public static byte twoPower(int e){
-    byte temp=1;
-    for(int i=0;i<e;i++) temp=(byte)(temp*2);
-    return(temp);
-  }
-  public int getRowsLength(){
-    return(row);
-  }
-  public int getColsLength(){
-    return(col);
-  }
-  public byte[] getBytes(){
-    int realCol=(col-1)/8+1;
-    byte []temp=new byte[row*realCol];
-    for(int i=0;i<row;i++)
-      for(int j=0;j<realCol;j++) temp[i*realCol+j]=array[i][j];
-    return(temp);
-  }
- public void setBytes(byte[] byteArray){
-   int realCol=(col-1)/8+1;
-   array=new byte[row][realCol];
-   for(int i=0;i<row;i++)
-    for(int j=0;j<realCol;j++)
-     array[i][j]=byteArray[i*realCol+j];
 
- }
- public void paintIt(Graphics g,int top,int left,int color){
-  g.setColor(color);
-  for(int i=0;i<getRowsLength();i++)
-   for(int j=0;j<getColsLength();j++){
-     if (getBit(i, j) == 1)
-       g.fillRect(left + j /* *colsScale*/, top + i /* *rowsScale*/, /*colsScale,
-                  rowsScale*/1,1);
-   }
-  }
+    private byte[][] array;
+    private int row,  col;
+    public static final int rowsScale = 2;
+    public static final int colsScale = 2;
+
+    public BitArray(int aRow, int aCol) {
+        row = aRow;
+        col = aCol;
+        int realCol = (col - 1) / 8 + 1;
+        array = new byte[row][realCol];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < realCol; j++) {
+                array[i][j] = 0;
+            }
+        }
+    }
+
+    public BitArray(byte[] byteArray, int aRow, int aCol) {
+        row = aRow;
+        col = aCol;
+        setBytes(byteArray);
+    }
+
+    public void setBit(int r, int c) {
+        int tempC = c / 8;
+        array[r][tempC] = (byte) ((array[r][tempC]) | (twoPower(7 - (c - 8 * tempC))));
+    }
+
+    public void clearBit(int r, int c) {
+        int tempC = c / 8;
+        array[r][tempC] = (byte) (array[r][tempC] & (255 - twoPower(7 - (c - 8 * tempC))));
+    }
+
+    public void complementBit(int r, int c) {
+        int bit = getBit(r, c);
+        if (bit == 1) {
+            clearBit(r, c);
+        } else {
+            setBit(r, c);
+        }
+    }
+
+    public int getBit(int r, int c) {
+        try {
+            int temp = array[r][c / 8] & (twoPower(7 - (c - 8 * (c / 8))));
+            if (temp == 0) {
+                return (0);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in array boundries" + r + " " + c);
+        }
+        return (1);
+    }
+
+    public static byte twoPower(int e) {
+        byte temp = 1;
+        for (int i = 0; i < e; i++) {
+            temp = (byte) (temp * 2);
+        }
+        return (temp);
+    }
+
+    public int getRowsLength() {
+        return (row);
+    }
+
+    public int getColsLength() {
+        return (col);
+    }
+
+    public byte[] getBytes() {
+        int realCol = (col - 1) / 8 + 1;
+        byte[] temp = new byte[row * realCol];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < realCol; j++) {
+                temp[i * realCol + j] = array[i][j];
+            }
+        }
+        return (temp);
+    }
+
+    public void setBytes(byte[] byteArray) {
+        int realCol = (col - 1) / 8 + 1;
+        array = new byte[row][realCol];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < realCol; j++) {
+                array[i][j] = byteArray[i * realCol + j];
+            }
+        }
+    }
+
+    public void paintIt(Graphics g, int top, int left, int color) {
+        g.setColor(color);
+        for (int i = 0; i < getRowsLength(); i++) {
+            for (int j = 0; j < getColsLength(); j++) {
+                if (getBit(i, j) == 1) {
+                    g.fillRect(left + j /* *colsScale*/, top + i /* *rowsScale*/, /*colsScale,
+                            rowsScale*/ 1, 1);
+                }
+            }
+        }
+    }
 }
