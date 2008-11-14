@@ -4,6 +4,9 @@ import java.io.*;
 import javax.swing.JTextArea;
 
 // <editor-fold defaultstate="collapsed" desc="mbfc license">
+import mbfc.filing.DataConvertor;
+
+// <editor-fold defaultstate="collapsed" desc="license">
 /*
  * Created until 26-Nov-2007 at 16:20:01.
  * 
@@ -30,6 +33,16 @@ import javax.swing.JTextArea;
  * http://www.samancomputers.com for details.
  */
 // </editor-fold>
+
+enum CharType{
+        space,
+        enter,
+        first,
+        middle,
+        last,
+        seprated
+    }
+
 public class CodeConverter {
 
     final static public int space = 0;
@@ -38,6 +51,7 @@ public class CodeConverter {
     final static public int middle = 3;
     final static public int last = 4;
     final static public int seprated = 5;
+    
     private char[] text;
     private GroupContainer groups;
     private LinkContainer linker;
@@ -159,7 +173,7 @@ public class CodeConverter {
     public boolean saveToFile(String filename) {
         try {
             DataOutputStream outS = new DataOutputStream(new FileOutputStream(filename));
-            outS.write(text.length);
+            outS.write(DataConvertor.intToBytes(text.length));
             JTextArea txaTemp = new JTextArea();
             outS.write(convert(txaTemp));
             outS.close();

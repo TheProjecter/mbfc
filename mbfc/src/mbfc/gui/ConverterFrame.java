@@ -21,6 +21,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 // <editor-fold defaultstate="collapsed" desc="mbfc license">
+import mbfc.Alignment;
 /*
  * Created until 26-Nov-2007 at 16:20:01.
  * 
@@ -47,6 +48,7 @@ import java.awt.Insets;
  * http://www.samancomputers.com for details.
  */
 // </editor-fold>
+
 public class ConverterFrame extends JFrame {
 
     GroupContainer groups;
@@ -192,22 +194,22 @@ public class ConverterFrame extends JFrame {
             int lIntend = Integer.parseInt(txtLeftIntend.getText());
             int uIntend = Integer.parseInt(txtUpIntend.getText());
             int dIntend = Integer.parseInt(txtDownIntend.getText());
-            char alignment = 'l';
+            Alignment alignment = Alignment.LEFT_TO_RIGHT;
             switch (chcAlignment.getSelectedIndex()) {
                 case 0: {
-                    alignment = TextPreviewCanvas.leftToRight;
+                    alignment = Alignment.LEFT_TO_RIGHT;
                     break;
                 }
                 case 1: {
-                    alignment = TextPreviewCanvas.rightToLeft;
+                    alignment = Alignment.RIGHT_TO_LEFT;
                     break;
                 }
                 case 2: {
-                    alignment = TextPreviewCanvas.centered;
+                    alignment = Alignment.CENTERED;
                     break;
                 }
                 case 3: {
-                    alignment = TextPreviewCanvas.justified;
+                    alignment = Alignment.JUSTIFIED;
                     break;
                 }
             }

@@ -1,6 +1,9 @@
 package mbfc.render;
 
 import java.awt.*;
+import java.util.LinkedList;
+import mbfc.Alignment;
+import mbfc.filing.DataConvertor;
 import mbfc.gui.MyComment;
 import mbfc.storage.micro.MicroBitArrayContainer;
 
@@ -35,10 +38,10 @@ public class TextPreviewCanvas extends Canvas {
 
     public static byte space = 0;
     public static byte enter = 1;
-    public static char rightToLeft = 'r';
+    /*public static char rightToLeft = 'r';
     public static char leftToRight = 'l';
     public static char centered = 'c';
-    public static char justified = 'j';
+    public static char justified = 'j';*/
     private byte[] text;
     private int spaceLengthInPixel;
     private MicroBitArrayContainer font;
@@ -47,7 +50,7 @@ public class TextPreviewCanvas extends Canvas {
     private Color backgroundColor;
     private Color color;
     private Color transparentColor;
-    private char alignment;
+    private Alignment alignment;
     private int gapBetweenLines;
     public boolean wasLastLine;
     private boolean endOfParagraph;
@@ -57,7 +60,7 @@ public class TextPreviewCanvas extends Canvas {
     //private int endIntend=0;
     public TextPreviewCanvas(byte[] text, MicroBitArrayContainer font, int spaceLengthInPixel,
             int gapBetweenLines, Color color, Color transparentColor,
-            Color backgroundColor, char alignment,//int firstLineIntend,
+            Color backgroundColor, Alignment alignment,//int firstLineIntend,
             int leftIntend, int rightIntend,
             int upIntend, int downIntend, int height, int width) {
         this.text = text;
@@ -86,7 +89,7 @@ public class TextPreviewCanvas extends Canvas {
     public void changedInformations(byte[] text, MicroBitArrayContainer font,
             int spaceLengthInPixel, int gapBetweenLines,
             Color color, Color transparentColor,
-            Color backgroundColor, char alignment,
+            Color backgroundColor, Alignment alignment,
             /*int firstLineIntend,*/ int leftIntend,
             int rightIntend, int upIntend, int downIntend,
             int height, int width) {
@@ -252,7 +255,7 @@ public class TextPreviewCanvas extends Canvas {
         return (temp);
     }
 
-    /*this method gets a optimized text that sqenced spaces and enters is deleted
+    /*this method gets an optimized text that sqenced spaces and enters is deleted
     in this but this method manipulates entered text, before that u must send a
     copy of ur text enter and space of end of text will be deleted*/
     private byte[] getOptimize(byte[] text) {
@@ -298,9 +301,38 @@ public class TextPreviewCanvas extends Canvas {
                 if (font.isTransparent(subText[i]) && isLtoR) {
                     dis -= (font.getCharacter(subText[i]).getColsLength() + 1);
                 }
+
                 font.getCharacter(subText[i]).paintIt(g, disFromTopInPixel,
                         dis + disFromLeftInPixel,
                         font.isTransparent(subText[i]) ? transparentColor : color);
+
+                
+                System.out.println("-------" + (n++) + "-------");
+                if ((n > 0) && (y < disFromTopInPixel)) {
+                    int num = (disFromTopInPixel - y) / (font.getCharacter(subText[i]).getRowsLength());
+                    for (int j = 0; j < num; j++) {
+                        bytes.add(enter);
+                        System.out.println("enter");
+                    }
+                }
+                if ((n > 0) && (y == disFromTopInPixel) && (dis + disFromLeftInPixel - x - 1 > lw)) {
+                    System.out.println("Space = " + (dis + disFromLeftInPixel - x - lw) + " pixels");
+                    bytes.add(space);
+                    bytes.add((byte)(dis + disFromLeftInPixel - x - lw));
+                }
+                System.out.println(disFromTopInPixel + "," + (dis + disFromLeftInPixel));
+                System.out.println(font.isTransparent(subText[i]) ? "transparentColor" : "color");
+                if (disFromTopInPixel - y > 0) {
+                    y = disFromTopInPixel;
+                    x = dis + disFromLeftInPixel;
+                    System.out.println(font.getCharacter(subText[i]).getColsLength() + " " + (dis + disFromLeftInPixel - x) + "," + (disFromTopInPixel - y));
+                } else {
+                    System.out.println(font.getCharacter(subText[i]).getColsLength() + " " + (dis + disFromLeftInPixel - x) + "," + (disFromTopInPixel - y));
+                    x = dis + disFromLeftInPixel;
+                }
+                lw = font.getCharacter(subText[i]).getColsLength();
+                bytes.add(subText[i]);
+
                 dis += (font.getCharacter(subText[i]).getColsLength() + 1);
                 if (font.isTransparent(subText[i]) && !isLtoR) {
                     dis -= (font.getCharacter(subText[i]).getColsLength() + 1);
@@ -310,6 +342,11 @@ public class TextPreviewCanvas extends Canvas {
             }
         }
     }
+    private static int n = 0;
+    private static int x = 0;
+    private static int y = 0;
+    private static int lw = 0;
+    LinkedList<Byte> bytes = new LinkedList<Byte>();
 
     /*because of using weak method sequencedPrint,we must apply some changes in
     disFromLeftInPixel and subText before sending them to that method.see:
@@ -330,7 +367,13 @@ public class TextPreviewCanvas extends Canvas {
     fillJustifiedArray method comments),
     a.for lr languages: dis=0,sequencedPrint of text
     b.for rl languages: dis=0,sequencedPrint of rev-text*/
+    @Override
     public void paint(Graphics g) {
+        n = 0;
+        y = 0;
+        x = 0;
+        lw = 0;
+        bytes.clear();
         try {
             g.setColor(backgroundColor);
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -355,19 +398,19 @@ public class TextPreviewCanvas extends Canvas {
                     return;
                 }
                 disFromLeft = lIntend;
-                if (alignment == rightToLeft) {
+                if (alignment == Alignment.RIGHT_TO_LEFT) {
                     disFromLeft = displayWidth -
                             dc.lineLengthInPixel + lIntend;
-                } else if (alignment == centered) {
+                } else if (alignment == Alignment.CENTERED) {
                     disFromLeft = (displayWidth -
                             dc.lineLengthInPixel) / 2 + lIntend;
                 }
-                if (font.getAlignment() == font.rightToLeft) {
+                if (font.getAlignment() == MicroBitArrayContainer.rightToLeft) {
                     currentSlice = getReverse(
                             currentSlice);
                 }
                 int[] spaceArray = new int[dc.numberOfWords - 1];
-                if (!(alignment == justified)) {
+                if (!(alignment == Alignment.JUSTIFIED)) {
                     fillArrayWith(spaceArray,
                             spaceLengthInPixel);
                 } else if (!endOfParagraph) /*alignment is justified*/ {
@@ -375,12 +418,12 @@ public class TextPreviewCanvas extends Canvas {
                             spaceLengthInPixel);
                 } else { //last line in justified
                     fillArrayWith(spaceArray, spaceLengthInPixel);
-                    if (font.getAlignment() == font.rightToLeft) {
+                    if (font.getAlignment() == MicroBitArrayContainer.rightToLeft) {
                         disFromLeft = displayWidth - dc.lineLengthInPixel + lIntend;
                     }
-                } //09126184162 VASE KIE!!? IN CHE COMMENTIE
+                }
                 sequencedPrint(g, getOptimize(currentSlice), spaceArray, disFromLeft,
-                        disFromTop, font.getAlignment() == font.leftToRight);
+                        disFromTop, font.getAlignment() == MicroBitArrayContainer.leftToRight);
                 disFromTop += font.getHeight() + gapBetweenLines;
                 start = next + 1;
                 if (wasLastLine) {
@@ -397,5 +440,18 @@ public class TextPreviewCanvas extends Canvas {
             MyComment mc = new MyComment("Error!!! Arrang your enter chars better!!!", "OK", 500);
             mc.show();
         }
+    }
+    
+    public byte[] getPageBytes(){
+        byte[] temp = new byte[bytes.size()+8];
+        byte[] t = DataConvertor.intToBytes(displayWidth);
+        for(int i=0;i<4;i++)
+            temp[i]=t[i];
+        t = DataConvertor.intToBytes(lIntend);
+        for(int i=0;i<4;i++)
+            temp[i+4]=t[i];
+        for(int i=0;i<bytes.size();i++)
+            temp[i+8] = bytes.get(i).byteValue();
+        return temp;
     }
 }
