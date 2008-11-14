@@ -10,6 +10,8 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.io.RandomAccessFile;
+import mbfc.Alignment;
 
 // <editor-fold defaultstate="collapsed" desc="mbfc license">
 /*
@@ -46,11 +48,12 @@ public class TextPreviewFrame extends JFrame {
     private int width = 0;
     private int height = 0;
     JButton btnNext = new JButton();
+    JButton btnGeneratePage = new JButton();
     private JPanel jContentPane = null;
 
     public TextPreviewFrame(byte[] text, MicroBitArrayContainer font,
             int spaceLengthInPixel, int gapBetweenLines, Color color,
-            Color transparentColor, Color backgroundColor, char alignment,
+            Color transparentColor, Color backgroundColor, Alignment alignment,
             int lIntend, int rIntend, int uIntend, int dIntend, int height,
             int width) {
         try {
@@ -65,6 +68,7 @@ public class TextPreviewFrame extends JFrame {
             scrlCanvas.add(canvas);
             jbInit();
             if (!(canvas.wasLastLine)) {
+
                 btnNext.setEnabled(true);
             }
         } catch (Exception exception) {
@@ -81,10 +85,23 @@ public class TextPreviewFrame extends JFrame {
         btnNext.setText(">>");
         btnNext.addActionListener(new TextPreviewFrame_btnNext_actionAdapter(
                 this));
+        btnGeneratePage.setText("Generate Page");
+        btnGeneratePage.addActionListener(new TextPreviewFrame_btnGenerate_actionAdapter(
+                this));
     }
 
     void btnNext_actionPerformed(ActionEvent e) {
         canvas.repaint();
+    }
+
+    void btnGenerate_actionPerformed(ActionEvent e) {
+        byte[] bytes = canvas.getPageBytes();
+        try {
+            RandomAccessFile file = new RandomAccessFile("C:\\lastpage.mbp", "rw");
+            file.write(bytes);
+            file.close();
+        } catch (Exception exp) {
+        }
     }
 
     /**
@@ -96,19 +113,29 @@ public class TextPreviewFrame extends JFrame {
         if (jContentPane == null) {
             GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
             gridBagConstraints1.gridx = 0;
-            gridBagConstraints1.gridwidth = 2;
+            gridBagConstraints1.gridwidth = 5;
             gridBagConstraints1.ipadx = width;
             gridBagConstraints1.ipady = height;
             gridBagConstraints1.gridy = 1;
+
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridwidth = 5;
+            gridBagConstraints.gridwidth = 2;
             gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
             gridBagConstraints.insets = new Insets(20, 0, 20, 0);
             gridBagConstraints.gridy = 0;
+
+            GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+            gridBagConstraints2.gridx = 3;
+            gridBagConstraints2.gridwidth = 2;
+            gridBagConstraints2.fill = GridBagConstraints.HORIZONTAL;
+            gridBagConstraints2.insets = new Insets(20, 0, 20, 0);
+            gridBagConstraints2.gridy = 0;
+
             jContentPane = new JPanel();
             jContentPane.setLayout(new GridBagLayout());
             jContentPane.add(btnNext, gridBagConstraints);
+            jContentPane.add(btnGeneratePage, gridBagConstraints2);
             jContentPane.add(scrlCanvas, gridBagConstraints1);
         }
         return jContentPane;
@@ -128,3 +155,26 @@ class TextPreviewFrame_btnNext_actionAdapter implements
         adaptee.btnNext_actionPerformed(e);
     }
 }
+
+class TextPreviewFrame_btnGenerate_actionAdapter implements
+        java.awt.event.ActionListener {
+
+    TextPreviewFrame adaptee;
+
+    TextPreviewFrame_btnGenerate_actionAdapter(TextPreviewFrame adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        adaptee.btnGenerate_actionPerformed(e);
+    }
+}
+
+/*
+سلام
+خوبی مردک
+فک کردی من کیم؟ معلومه جیگر من مجید عسگریم که دارم اینو تست می کنم.
+خوش به حالت آقا مجید
+خوش به حال خودت
+ابله
+*/

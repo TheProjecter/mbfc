@@ -147,20 +147,20 @@ public class MicroBitArrayContainer {
             outS.write(temp);
             //writing font type C for Constant width font and V for Other
             temp[0] = 0;
-            if (widthType == this.constantWidth) {
+            if (widthType == constantWidth) {
                 temp[0] = 1;
             }
             outS.write(temp);
             //writing font alignment
             temp[0] = 0;
-            if (alignment == this.rightToLeft) {
+            if (alignment == rightToLeft) {
                 temp[0] = 1;
             }
             outS.write(temp);
             //save character transparent status
             outS.write(transparentArray);
             //if constant width,here i write width and then BitArrays
-            if (widthType == this.constantWidth) {
+            if (widthType == constantWidth) {
                 temp[0] = defaultWidth;
                 outS.write(temp);
                 for (int i = 0; i < len; i++) {
@@ -196,21 +196,21 @@ public class MicroBitArrayContainer {
             height = temp[0];
             //reading font type
             inS.read(temp);
-            widthType = this.varifiedWidth;
+            widthType = varifiedWidth;
             if (temp[0] == 1) {
-                widthType = this.constantWidth;
+                widthType = constantWidth;
             //reading font alignment
             }
             inS.read(temp);
-            alignment = this.leftToRight;
+            alignment = leftToRight;
             if (temp[0] == 1) {
-                alignment = this.rightToLeft;
+                alignment = rightToLeft;
             //set transparent status
             }
             transparentArray = new byte[len];
             inS.read(transparentArray);
             //if constant width,i read width and then Hole of bitArray
-            if (widthType == this.constantWidth) {
+            if (widthType == constantWidth) {
                 inS.read(temp);
                 byte width = temp[0];
                 for (int i = 0; i < len; i++) {
