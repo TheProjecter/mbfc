@@ -1,6 +1,7 @@
 package mbfcme.storage;
 
 import javax.microedition.lcdui.Graphics;
+// <editor-fold defaultstate="collapsed" desc="">
 /*
  * Created until 26-Nov-2007 at 16:20:01.
  * 
@@ -26,6 +27,7 @@ import javax.microedition.lcdui.Graphics;
  * refer to the accompanying LICENSE.txt or visit
  * http://www.samancomputers.com for details.
  */
+// </editor-fold>
 
 public class BitArray {
 
