@@ -33,5 +33,8 @@ public class MBFC {
 
     public static void main(String[] args) {
         (new MainFrame()).setVisible(true);
+        for(int i=0;i<10;i++){
+            i = 10;
+        }
     }
 }
