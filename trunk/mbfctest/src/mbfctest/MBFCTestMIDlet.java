@@ -66,7 +66,7 @@ public class MBFCTestMIDlet extends MIDlet {
             form.append("First Step");
 
             //System.gc();
-            canvas = new PageCanvas(textS, font, 2, 5, 0xffffff, 0x000000, 0xff0000,
+            canvas = new PageCanvas(textS, font, 10, 10, 0xffffff, 0x000000, 0xff0000,
                     BitFontCanvas.justified);
             Display.getDisplay(this).setCurrent(canvas);
         } catch (Exception ex) {
