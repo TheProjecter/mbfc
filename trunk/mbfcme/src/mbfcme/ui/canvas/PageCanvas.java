@@ -2,6 +2,7 @@ package mbfcme.ui.canvas;
 
 import java.io.InputStream;
 import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import mbfcme.storage.BitArrayContainer;
 
@@ -74,13 +75,16 @@ public class PageCanvas extends Canvas {
             text.close();
         } catch (Exception exp) {
         }
+        setFullScreenMode(true);
     }
+    private int startLine = 0;
+    private boolean allShown = false;
 
     public void paint(Graphics g) {
 
         g.setColor(backgroundColor);
         g.fillRect(0, 0, getWidth(), getHeight());
-        
+
         if (displayWidth > width) {
             return;
         }
@@ -88,15 +92,29 @@ public class PageCanvas extends Canvas {
         int x = leftIntend;
         int lineW = 0;
 
-        int in = 0;
-        for (int index = 0; index < text.length; index++) {
-            if ((text[index] == enter) || (index == 0)) {
+        int in = startLine;
+        int index = 0;
+        for (index = startLine; index < text.length; index++) {
 
-                if (index != 0) {
+            if ((text[index] == enter)) {
+                if (index != startLine) {
                     y += gapBetweenLines + font.getHeight();
+                    if (y + gapBetweenLines + font.getHeight() >= getHeight()) {
+                        break;
+                    }
+                }
+            }
+
+            if ((text[index] == enter) || (index == startLine)) {
+
+                if ((index != startLine)) {
+                    //y += gapBetweenLines + font.getHeight();
+                    //if (y + gapBetweenLines + font.getHeight() >= getHeight()) {
+                    //    break;
+                    //}
                     in = index + 1;
                 } else {
-                    in = 0;
+                    in = startLine;
                 }
 
                 if (alignment != leftToRight) {
@@ -123,20 +141,71 @@ public class PageCanvas extends Canvas {
                 } else if (alignment == justified) {
                     x = leftIntend + (width - lineW);
                 }
-            } else if (text[index] == space) {
-                if (index == 1) {
-                    
+            } 
+            
+            if(text[index]==enter);
+            else if (text[index] == space) {
+                if (index == startLine + 1) {
                 } else {
                     x += text[++index];
                 }
             } else {
-                if(font.isTransparent(text[index]))
+                if (font.isTransparent(text[index])) {
                     g.setColor(transparentColor);
-                else
+                } else {
                     g.setColor(color);
+                }
                 font.getCharacter(text[index]).paintIt(g, y, x, color);
                 x += font.getCharacter(text[index]).getColsLength();
             }
+        }
+
+        if (index == text.length) {
+            allShown = true;
+        } else {
+            allShown = false;
+        //g.getFont(Font.SIZE_SMALL);
+        //g.drawString("\\/", 0, 0, 0);
+        }
+    }
+
+    private void gotoNextLine() {
+        if (allShown) {
+            return;
+        }
+        int i = 0;
+        for (i = startLine; i < text.length; i++) {
+            if (text[i] == enter) {
+                break;
+            }
+        }
+        if (i < text.length) {
+            startLine = i + 1;
+        }
+        repaint();
+    }
+
+    private void gotoPreviousLine() {
+        if (startLine == 0) {
+            return;
+        }
+        int i = 0;
+        for (i = startLine - 2; i >= 0; i--) {
+            if (text[i] == enter) {
+                break;
+            //if(i==0) startLine=0;
+            //else 
+            }
+        }
+        startLine = i + 1;
+        repaint();
+    }
+
+    public void keyPressed(int key) {
+        if (key == -2/*DOWN*/) {
+            gotoNextLine();
+        } else if (key == -1/*UP*/) {
+            gotoPreviousLine();
         }
     }
 
